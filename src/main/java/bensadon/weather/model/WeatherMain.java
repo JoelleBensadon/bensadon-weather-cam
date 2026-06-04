@@ -1,9 +1,13 @@
 package bensadon.weather.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class WeatherMain
 {
     private double temp;
-    private double feels_like;
+
+    @SerializedName("feels_like")
+    private double feelsLike;
 
     public double getTemp()
     {
@@ -12,6 +16,6 @@ public class WeatherMain
 
     public double getFeelsLike()
     {
-        return feels_like;
+        return feelsLike;
     }
 }
