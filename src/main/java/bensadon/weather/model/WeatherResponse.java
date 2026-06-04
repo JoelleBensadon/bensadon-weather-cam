@@ -1,0 +1,19 @@
+package bensadon.weather.model;
+
+import java.util.List;
+
+public class WeatherResponse
+{
+    private WeatherMain main;
+    private List<WeatherDescription> weather;
+
+    public WeatherMain getMain()
+    {
+        return main;
+    }
+
+    public List<WeatherDescription> getWeather()
+    {
+        return weather;
+    }
+}
