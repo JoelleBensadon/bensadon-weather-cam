@@ -1,42 +1,68 @@
 package bensadon.weather;
 
 import bensadon.weather.api.ApiKeys;
+import bensadon.weather.api.OpenWeatherService;
+import bensadon.weather.api.OpenWeatherServiceFactory;
 import bensadon.weather.api.WindyService;
 import bensadon.weather.api.WindyServiceFactory;
+import bensadon.weather.model.GeoLocation;
+import bensadon.weather.model.WeatherResponse;
 import bensadon.weather.model.WindyResponse;
+import bensadon.weather.model.WindyWebcam;
 import retrofit2.Response;
+
+import java.util.List;
+import java.util.Scanner;
 
 public class WeatherApp
 {
     public static void main(String[] args) throws Exception
     {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Enter location:");
+        String userLocation = scanner.nextLine();
+
         ApiKeys apiKeys = new ApiKeys();
 
+        OpenWeatherService openWeatherService = OpenWeatherServiceFactory.create();
         WindyService windyService = WindyServiceFactory.create();
 
-        Response<WindyResponse> response = windyService.getWebcams(
-                "40.6526006,-73.9497211",
-                10,
-                5,
-                "categories,images,location",
-                apiKeys.getWindyKey()
-        ).execute();
+        Response<List<GeoLocation>> locationResponse =
+                openWeatherService.getLocation(userLocation, 1, apiKeys.getOpenWeatherMapKey()).execute();
 
-        System.out.println(response.code());
-        System.out.println(response.message());
+        GeoLocation location = locationResponse.body().get(0);
 
-        if (response.body() != null && response.body().getWebcams() != null)
+        double lat = location.getLat();
+        double lon = location.getLon();
+
+        Response<WeatherResponse> weatherResponse =
+                openWeatherService.getWeather(lat, lon, apiKeys.getOpenWeatherMapKey(), "imperial").execute();
+
+        WeatherResponse weather = weatherResponse.body();
+
+        System.out.println("Location: " + location.getName());
+        System.out.println("Temperature: " + weather.getMain().getTemp());
+        System.out.println("Feels like: " + weather.getMain().getFeelsLike());
+        System.out.println("Description: " + weather.getWeather().get(0).getDescription());
+
+        String nearby = lat + "," + lon + ",10";
+
+        Response<WindyResponse> windyResponse =
+                windyService.getWebcams(
+                        nearby,
+                        5,
+                        "categories,images,location",
+                        apiKeys.getWindyKey()
+                ).execute();
+
+        System.out.println();
+        System.out.println("Webcam images:");
+
+        for (WindyWebcam webcam : windyResponse.body().getWebcams())
         {
-            System.out.println("Webcams found: " + response.body().getWebcams().size());
-
-            for (int i = 0; i < response.body().getWebcams().size(); i++)
-            {
-                System.out.println(response.body().getWebcams().get(i).getTitle());
-                System.out.println(response.body().getWebcams().get(i).getImages().getCurrent().getPreview());            }
-        }
-        else
-        {
-            System.out.println("No webcams found");
+            System.out.println(webcam.getTitle());
+            System.out.println(webcam.getImages().getCurrent().getPreview());
         }
     }
 }

@@ -10,8 +10,7 @@ public interface WindyService
 {
     @GET("api/v3/webcams")
     Call<WindyResponse> getWebcams(
-            @Query("near") String near,
-            @Query("radius") int radius,
+            @Query("nearby") String nearby,
             @Query("limit") int limit,
             @Query("include") String include,
             @Header("x-windy-api-key") String apiKey
