@@ -1,35 +1,42 @@
 package bensadon.weather;
 
 import bensadon.weather.api.ApiKeys;
-import bensadon.weather.api.OpenWeatherService;
-import bensadon.weather.api.OpenWeatherServiceFactory;
-import bensadon.weather.model.GeoLocation;
-import bensadon.weather.model.WeatherResponse;
+import bensadon.weather.api.WindyService;
+import bensadon.weather.api.WindyServiceFactory;
+import bensadon.weather.model.WindyResponse;
 import retrofit2.Response;
-
-import java.util.List;
 
 public class WeatherApp
 {
     public static void main(String[] args) throws Exception
     {
         ApiKeys apiKeys = new ApiKeys();
-        OpenWeatherService service = OpenWeatherServiceFactory.create();
 
-        String apiKey = apiKeys.getOpenWeatherMapKey();
+        WindyService windyService = WindyServiceFactory.create();
 
-        Response<List<GeoLocation>> locationResponse =
-                service.getLocation("Brooklyn,NY,US", 1, apiKey).execute();
+        Response<WindyResponse> response = windyService.getWebcams(
+                "40.6526006,-73.9497211",
+                10,
+                5,
+                "categories,images,location",
+                apiKeys.getWindyKey()
+        ).execute();
 
-        GeoLocation location = locationResponse.body().get(0);
+        System.out.println(response.code());
+        System.out.println(response.message());
 
-        Response<WeatherResponse> weatherResponse =
-                service.getWeather(location.getLat(), location.getLon(), apiKey, "imperial").execute();
+        if (response.body() != null && response.body().getWebcams() != null)
+        {
+            System.out.println("Webcams found: " + response.body().getWebcams().size());
 
-        WeatherResponse weather = weatherResponse.body();
-
-        System.out.println("Temperature: " + weather.getMain().getTemp());
-        System.out.println("Feels like: " + weather.getMain().getFeelsLike());
-        System.out.println("Description: " + weather.getWeather().get(0).getDescription());
+            for (int i = 0; i < response.body().getWebcams().size(); i++)
+            {
+                System.out.println(response.body().getWebcams().get(i).getTitle());
+                System.out.println(response.body().getWebcams().get(i).getImages().getCurrent().getPreview());            }
+        }
+        else
+        {
+            System.out.println("No webcams found");
+        }
     }
 }
