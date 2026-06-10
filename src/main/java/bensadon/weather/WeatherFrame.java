@@ -1,111 +1,123 @@
 package bensadon.weather;
 
-import bensadon.weather.api.ApiKeys;
-import bensadon.weather.api.OpenWeatherService;
 import bensadon.weather.api.OpenWeatherServiceFactory;
-import bensadon.weather.api.WindyService;
 import bensadon.weather.api.WindyServiceFactory;
-import bensadon.weather.model.GeoLocation;
-import bensadon.weather.model.WeatherResponse;
-import bensadon.weather.model.WindyResponse;
-import bensadon.weather.model.WindyWebcam;
-import retrofit2.Response;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.net.URL;
-import java.util.List;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class WeatherFrame extends JFrame
 {
-    private JTextField locationField;
-    private JPanel imagePanel;
-    private JLabel weatherLabel;
-
     public WeatherFrame()
     {
-        setTitle("Weather App");
         setSize(900, 700);
+        setTitle("Weather App");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        locationField = new JTextField();
+        setLayout(new GridBagLayout());
+
+        JTextField searchField = new JTextField();
         JButton searchButton = new JButton("Search");
 
-        JPanel topPanel = new JPanel(new BorderLayout());
-        topPanel.add(locationField, BorderLayout.CENTER);
-        topPanel.add(searchButton, BorderLayout.EAST);
+        JLabel imageLabel = new JLabel("Webcams", SwingConstants.CENTER);
+        imageLabel.setBorder(new LineBorder(Color.BLACK));
 
-        weatherLabel = new JLabel("Enter a location to see the weather.");
-        imagePanel = new JPanel();
+        JPanel imagePanel = new JPanel();
         imagePanel.setLayout(new BoxLayout(imagePanel, BoxLayout.Y_AXIS));
-
         JScrollPane scrollPane = new JScrollPane(imagePanel);
+        scrollPane.setPreferredSize(new Dimension(400, 500));
 
-        add(topPanel, BorderLayout.NORTH);
-        add(scrollPane, BorderLayout.CENTER);
-        add(weatherLabel, BorderLayout.SOUTH);
+        JLabel tempTitleLabel = new JLabel("Temperature");
+        JLabel feelsLikeTitleLabel = new JLabel("Feels Like");
+        JLabel descriptionTitleLabel = new JLabel("Description");
 
-        searchButton.addActionListener(e -> search());
-        locationField.addActionListener(e -> search());
-    }
+        JLabel tempValueLabel = new JLabel("");
+        JLabel feelsLikeValueLabel = new JLabel("");
+        JLabel descriptionValueLabel = new JLabel("");
 
-    private void search()
-    {
-        try
+        WeatherController weatherController = new WeatherController(
+                new OpenWeatherServiceFactory().create(),
+                new WindyServiceFactory().create(),
+                searchField,
+                tempValueLabel,
+                feelsLikeValueLabel,
+                descriptionValueLabel,
+                imagePanel
+        );
+
+        searchButton.addActionListener(new ActionListener()
         {
-            imagePanel.removeAll();
-
-            String userLocation = locationField.getText();
-
-            ApiKeys apiKeys = new ApiKeys();
-            OpenWeatherService openWeatherService = OpenWeatherServiceFactory.create();
-            WindyService windyService = WindyServiceFactory.create();
-
-            Response<List<GeoLocation>> locationResponse =
-                    openWeatherService.getLocation(userLocation, 1, apiKeys.getOpenWeatherMapKey()).execute();
-
-            GeoLocation location = locationResponse.body().get(0);
-
-            double lat = location.getLat();
-            double lon = location.getLon();
-
-            Response<WeatherResponse> weatherResponse =
-                    openWeatherService.getWeather(lat, lon, apiKeys.getOpenWeatherMapKey(), "imperial").execute();
-
-            WeatherResponse weather = weatherResponse.body();
-
-            weatherLabel.setText(
-                    location.getName()
-                            + " | Temp: " + weather.getMain().getTemp()
-                            + " | Feels like: " + weather.getMain().getFeelsLike()
-                            + " | " + weather.getWeather().get(0).getDescription()
-            );
-
-            String nearby = lat + "," + lon + ",10";
-
-            Response<WindyResponse> windyResponse =
-                    windyService.getWebcams(
-                            nearby,
-                            5,
-                            "categories,images,location",
-                            apiKeys.getWindyKey()
-                    ).execute();
-
-            for (WindyWebcam webcam : windyResponse.body().getWebcams())
+            @Override
+            public void actionPerformed(ActionEvent e)
             {
-                JLabel title = new JLabel(webcam.getTitle());
-                imagePanel.add(title);
-
-                URL url = new URL(webcam.getImages().getCurrent().getPreview());
-                JLabel imageLabel = new JLabel(new ImageIcon(url));
-                imagePanel.add(imageLabel);
+                weatherController.searchWeather();
             }
+        });
 
-            imagePanel.revalidate();
-            imagePanel.repaint();
-        } catch (Exception ex)
-        {
-            weatherLabel.setText("Could not find weather for that location.");
-        }
+        GridBagConstraints constraints;
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.gridwidth = 3;
+        constraints.weightx = 1;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        add(searchField, constraints);
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 3;
+        constraints.gridy = 0;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        add(searchButton, constraints);
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+        constraints.gridwidth = 2;
+        constraints.gridheight = 5;
+        constraints.insets = new Insets(10, 10, 10, 10);
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        add(scrollPane, constraints);
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 2;
+        constraints.gridy = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        add(tempTitleLabel, constraints);
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 3;
+        constraints.gridy = 1;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        add(tempValueLabel, constraints);
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 2;
+        constraints.gridy = 2;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        add(feelsLikeTitleLabel, constraints);
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 3;
+        constraints.gridy = 2;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        add(feelsLikeValueLabel, constraints);
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 2;
+        constraints.gridy = 3;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        add(descriptionTitleLabel, constraints);
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 3;
+        constraints.gridy = 3;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        add(descriptionValueLabel, constraints);
     }
 }

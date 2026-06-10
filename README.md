@@ -6,9 +6,9 @@ weather data and Windy for webcam images.
 
 ### Screenshots
 
-![Weather App](Screenshots/WeatherAppSS.png)
+![Weather App](Screenshots/WeatherCamSS.png)
 #### Links
 
 - [OpenWeatherMap](https://openweathermap.org/)
 - [Windy Webcams API](https://api.windy.com/webcams)
-- [GitHub Repository](https://github.com/JoelleBensadon/bensadon-weather-cam/pull/2)
+- [GitHub Repository](https://github.com/JoelleBensadon/bensadon-weather-cam)
