@@ -41,6 +41,7 @@ class WindyServiceTest
             return null;
         }
     }
+
     private boolean hasApiKeys()
     {
         return getClass().getResource("/apikey.properties") != null;
