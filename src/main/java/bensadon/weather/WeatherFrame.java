@@ -103,8 +103,7 @@ public class WeatherFrame extends JFrame
 
             imagePanel.revalidate();
             imagePanel.repaint();
-        }
-        catch (Exception ex)
+        } catch (Exception ex)
         {
             weatherLabel.setText("Could not find weather for that location.");
         }
