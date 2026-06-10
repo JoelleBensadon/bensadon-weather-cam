@@ -3,6 +3,7 @@ package bensadon.weather.api;
 import bensadon.weather.model.GeoLocation;
 import bensadon.weather.model.WeatherResponse;
 import com.andrewoid.apikeys.ApiKey;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

@@ -2,6 +2,7 @@ package bensadon.weather.api;
 
 import bensadon.weather.model.WindyResponse;
 import com.andrewoid.apikeys.ApiKey;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -12,7 +13,7 @@ class WindyServiceTest
     void getWebcams()
     {
         // Given
-        ApiKey apiKey = new ApiKey("windy");
+        ApiKey apiKey = getApiKey();
         WindyService service = new WindyServiceFactory().create();
 
         // When
@@ -26,5 +27,17 @@ class WindyServiceTest
         // Then
         assertNotNull(response.getWebcams());
         assertNotNull(response.getWebcams().get(0).getImages().getCurrent().getPreview());
+    }
+
+    private ApiKey getApiKey()
+    {
+        try
+        {
+            return new ApiKey("windy");
+        } catch (RuntimeException e)
+        {
+            Assumptions.abort("No Windy API key found");
+            return null;
+        }
     }
 }
