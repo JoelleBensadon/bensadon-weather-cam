@@ -19,8 +19,8 @@ public class WeatherFrame extends JFrame
 
         setLayout(new GridBagLayout());
 
-        JTextField searchField = new JTextField();
-        JButton searchButton = new JButton("Search");
+        final JTextField searchField = new JTextField();
+        final JButton searchButton = new JButton("Search");
 
         JLabel imageLabel = new JLabel("Webcams", SwingConstants.CENTER);
         imageLabel.setBorder(new LineBorder(Color.BLACK));
@@ -30,9 +30,9 @@ public class WeatherFrame extends JFrame
         JScrollPane scrollPane = new JScrollPane(imagePanel);
         scrollPane.setPreferredSize(new Dimension(400, 500));
 
-        JLabel tempTitleLabel = new JLabel("Temperature");
-        JLabel feelsLikeTitleLabel = new JLabel("Feels Like");
-        JLabel descriptionTitleLabel = new JLabel("Description");
+        final JLabel tempTitleLabel = new JLabel("Temperature");
+        final JLabel feelsLikeTitleLabel = new JLabel("Feels Like");
+        final JLabel descriptionTitleLabel = new JLabel("Description");
 
         JLabel tempValueLabel = new JLabel("");
         JLabel feelsLikeValueLabel = new JLabel("");
