@@ -12,6 +12,7 @@ class WindyServiceTest
     @Test
     void getWebcams()
     {
+        Assumptions.assumeTrue(hasApiKeys());
         // Given
         ApiKey apiKey = getApiKey();
         WindyService service = new WindyServiceFactory().create();
@@ -39,5 +40,9 @@ class WindyServiceTest
             Assumptions.abort("No Windy API key found");
             return null;
         }
+    }
+    private boolean hasApiKeys()
+    {
+        return getClass().getResource("/apikey.properties") != null;
     }
 }

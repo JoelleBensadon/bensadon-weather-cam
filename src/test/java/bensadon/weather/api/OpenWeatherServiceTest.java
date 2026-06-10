@@ -16,6 +16,8 @@ class OpenWeatherServiceTest
     void getLocation()
     {
         // Given
+        Assumptions.assumeTrue(hasApiKeys());
+
         ApiKey apiKey = new ApiKey();
         OpenWeatherService service = new OpenWeatherServiceFactory().create();
 
@@ -36,6 +38,8 @@ class OpenWeatherServiceTest
     void getWeather()
     {
         // Given
+        Assumptions.assumeTrue(hasApiKeys());
+
         ApiKey apiKey = new ApiKey();
         OpenWeatherService service = new OpenWeatherServiceFactory().create();
 
@@ -50,5 +54,10 @@ class OpenWeatherServiceTest
         // Then
         assertNotNull(weather.getMain());
         assertNotNull(weather.getWeather().get(0).getDescription());
+    }
+
+    private boolean hasApiKeys()
+    {
+        return getClass().getResource("/apikey.properties") != null;
     }
 }
