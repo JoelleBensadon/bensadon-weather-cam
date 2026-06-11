@@ -29,9 +29,11 @@ class OpenWeatherServiceTest
         ).blockingGet();
 
         // Then
-        assertEquals("Brooklyn", locations.get(0).getName());
-        assertNotEquals(0, locations.get(0).getLat());
-        assertNotEquals(0, locations.get(0).getLon());
+        GeoLocation location = locations.get(0);
+
+        assertEquals("Brooklyn", location.getName());
+        assertNotEquals(0, location.getLat());
+        assertNotEquals(0, location.getLon());
     }
 
     @Test
