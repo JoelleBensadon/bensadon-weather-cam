@@ -3,7 +3,6 @@ package bensadon.weather.api;
 import bensadon.weather.model.GeoLocation;
 import bensadon.weather.model.WeatherResponse;
 import com.andrewoid.apikeys.ApiKey;
-import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -16,8 +15,6 @@ class OpenWeatherServiceTest
     void getLocation()
     {
         // Given
-        Assumptions.assumeTrue(hasApiKeys());
-
         ApiKey apiKey = new ApiKey();
         OpenWeatherService service = new OpenWeatherServiceFactory().create();
 
@@ -30,7 +27,6 @@ class OpenWeatherServiceTest
 
         // Then
         GeoLocation location = locations.get(0);
-
         assertEquals("Brooklyn", location.getName());
         assertNotEquals(0, location.getLat());
         assertNotEquals(0, location.getLon());
@@ -40,8 +36,6 @@ class OpenWeatherServiceTest
     void getWeather()
     {
         // Given
-        Assumptions.assumeTrue(hasApiKeys());
-
         ApiKey apiKey = new ApiKey();
         OpenWeatherService service = new OpenWeatherServiceFactory().create();
 
@@ -56,10 +50,5 @@ class OpenWeatherServiceTest
         // Then
         assertNotNull(weather.getMain());
         assertNotNull(weather.getWeather().get(0).getDescription());
-    }
-
-    private boolean hasApiKeys()
-    {
-        return getClass().getResource("/apikey.properties") != null;
     }
 }
